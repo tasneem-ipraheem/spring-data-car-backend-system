@@ -14,3 +14,10 @@ should be running at once for full operation. Further instructions are available
 ## Dependencies
 
 The project requires the use of Maven and Spring Boot, along with Java v11.
+
+# urls
+
+Eureka :   			http://localhost:8761/ 
+H2 : 				http://localhost:8082/h2/
+prices-service :	http://localhost:8082/
+					http://localhost:8082/prices/1 
