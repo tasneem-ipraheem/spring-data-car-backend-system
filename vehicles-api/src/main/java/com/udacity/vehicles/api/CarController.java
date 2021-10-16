@@ -4,12 +4,11 @@ package com.udacity.vehicles.api;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
-import com.udacity.vehicles.domain.car.Car;
-import com.udacity.vehicles.service.CarService;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import javax.validation.Valid;
 
 import org.springframework.hateoas.Resource;
@@ -24,11 +23,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.udacity.vehicles.domain.car.Car;
+import com.udacity.vehicles.service.CarService;
+
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+
 /**
  * Implements a REST-based controller for the Vehicles API.
  */
 @RestController
 @RequestMapping("/cars")
+//@ApiResponses(value = {@ApiResponse(code = 404, message = "Car not found")})
 class CarController {
 
     private final CarService carService;
