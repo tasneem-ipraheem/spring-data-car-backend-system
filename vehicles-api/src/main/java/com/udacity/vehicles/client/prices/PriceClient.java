@@ -1,9 +1,17 @@
 package com.udacity.vehicles.client.prices;
 
+import java.util.Objects;
+
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import com.udacity.vehicles.client.maps.Address;
+import com.udacity.vehicles.domain.Location;
+
+import reactor.core.publisher.Mono;
 
 /**
  * Implements a class to interface with the Pricing Client for price data.
@@ -14,9 +22,13 @@ public class PriceClient {
     private static final Logger log = LoggerFactory.getLogger(PriceClient.class);
 
     private final WebClient client;
+    private final ModelMapper mapper;
 
-    public PriceClient(WebClient pricing) {
+    public PriceClient(WebClient pricing,
+            ModelMapper mapper){
         this.client = pricing;
+        this.mapper = mapper;
+
     }
 
     // In a real-world application we'll want to add some resilience
@@ -32,14 +44,17 @@ public class PriceClient {
      */
     public String getPrice(Long vehicleId) {
         try {
+        	//http://localhost:8082/prices?vehicleId=1
+        	//http://localhost:8082/prices/2
             Price price = client
-                    .get()
-                    .uri(uriBuilder -> uriBuilder
-                            .path("services/price/")
-                            .queryParam("vehicleId", vehicleId)
-                            .build()
-                    )
+                    .get().uri("http://localhost:8082/prices/"+vehicleId)
+//                    .uri(uriBuilder -> uriBuilder
+//                            .path("/prices")
+//                            .queryParam("vehicleId", vehicleId)
+//                            .build()
+//                    )
                     .retrieve().bodyToMono(Price.class).block();
+//            mapper.map(Objects.requireNonNull(price), price);
 
             return String.format("%s %s", price.getCurrency(), price.getPrice());
 
@@ -48,4 +63,5 @@ public class PriceClient {
         }
         return "(consult price)";
     }
+    
 }

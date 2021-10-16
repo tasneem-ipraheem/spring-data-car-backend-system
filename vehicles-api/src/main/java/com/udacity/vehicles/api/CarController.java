@@ -56,15 +56,15 @@ class CarController {
      * @param id the id number of the given vehicle
      * @return all information for the requested vehicle
      */
-    @GetMapping("/{id}")
-    Resource<Car> get(@PathVariable Long id) {
+    @GetMapping("/{vehicleId}")
+    Resource<Car> get(@PathVariable Long vehicleId) {
         /**
-         * TODO: Use the `findById` method from the Car Service to get car information.
-         * TODO: Use the `assembler` on that car and return the resulting output.
+         * TODO: DONE: Use the `findById` method from the Car Service to get car information.
+         * TODO: DONE: Use the `assembler` on that car and return the resulting output.
          *   Update the first line as part of the above implementing.
          */
     	
-    	Car car = carService.findById(id);
+    	Car car = carService.findById(vehicleId);
     	
         return assembler.toResource( car);
     }
@@ -81,8 +81,8 @@ class CarController {
     @PostMapping
     ResponseEntity<?> post(@Valid @RequestBody Car car) throws URISyntaxException {
         /**
-         * TODO # Use the `save` method from the Car Service to save the input car.
-         * TODO # Use the `assembler` on that saved car and return as part of the response.
+         * TODO: DONE: Use the `save` method from the Car Service to save the input car.
+         * TODO: DONE: Use the `assembler` on that saved car and return as part of the response.
          *   Update the first line as part of the above implementing.
          */
     	car = carService.save(car);
