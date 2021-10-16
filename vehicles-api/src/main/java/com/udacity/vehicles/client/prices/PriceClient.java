@@ -23,13 +23,9 @@ public class PriceClient {
     private static final Logger log = LoggerFactory.getLogger(PriceClient.class);
 
     private final WebClient client;
-    private final ModelMapper mapper;
 
-    public PriceClient(WebClient pricing,
-            ModelMapper mapper){
+    public PriceClient(WebClient pricing) {
         this.client = pricing;
-        this.mapper = mapper;
-
     }
 
     // In a real-world application we'll want to add some resilience
@@ -43,19 +39,17 @@ public class PriceClient {
      *   error message that the vehicle ID is invalid, or note that the
      *   service is down.
      */
+ 
+    
     public String getPrice(Long vehicleId) {
         try {
-        	//http://localhost:8082/prices?vehicleId=1
-        	//http://localhost:8082/prices/2
             Price price = client
-                    .get().uri("http://localhost:8082/prices/"+vehicleId)
-//                    .uri(uriBuilder -> uriBuilder
-//                            .path("/prices")
-//                            .queryParam("vehicleId", vehicleId)
-//                            .build()
-//                    )
+                    .get()
+                    .uri(uriBuilder -> uriBuilder
+                             .path("prices/"+ vehicleId)
+                            .build()
+                    )
                     .retrieve().bodyToMono(Price.class).block();
-            mapper.map(Objects.requireNonNull(price), price);
             if (price != null) 
             	return String.format("%s %s", price.getCurrency(), price.getPrice());
 
@@ -66,3 +60,25 @@ public class PriceClient {
     }
     
 }
+
+//public String myGetPrice(Long vehicleId) {
+//    try {
+//    	//http://localhost:8082/prices?vehicleId=1
+//    	//http://localhost:8082/prices/2
+//        Price price = client
+//                .get().uri("http://localhost:8082/prices/"+vehicleId)
+////                .uri(uriBuilder -> uriBuilder
+////                        .path("/prices")
+////                        .queryParam("vehicleId", vehicleId)
+////                        .build()
+////                )
+//                .retrieve().bodyToMono(Price.class).block();
+////        mapper.map(Objects.requireNonNull(price), price);
+//        if (price != null) 
+//        	return String.format("%s %s", price.getCurrency(), price.getPrice());
+//
+//    } catch (Exception e) {
+//        log.error("Unexpected error retrieving price for vehicle {}", vehicleId, e);
+//    }
+//    return "(consult price)";
+//}

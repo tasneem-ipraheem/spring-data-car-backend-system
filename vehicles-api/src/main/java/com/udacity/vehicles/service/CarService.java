@@ -2,7 +2,9 @@ package com.udacity.vehicles.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import com.udacity.vehicles.client.maps.MapsClient;
 import com.udacity.vehicles.client.prices.PriceClient;
@@ -22,13 +24,15 @@ public class CarService {
     private final PriceClient priceClient;
     private final MapsClient mapsClient;
     
-    public CarService(CarRepository repository,PriceClient priceClient, MapsClient mapsClient) {
+    public CarService(CarRepository repository,
+    		@Qualifier("pricing") WebClient priceWebClient,
+    		MapsClient mapsClient) {
         /**
          * TODO: DONE: Add the Maps and Pricing Web Clients you create
          *   in `VehiclesApiApplication` as arguments and set them here.
          */
         this.repository = repository;
-		this.priceClient = priceClient;
+		this.priceClient = new PriceClient(priceWebClient);
 		this.mapsClient = mapsClient;
     }
 
