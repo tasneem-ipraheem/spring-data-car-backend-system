@@ -55,9 +55,9 @@ public class CarService {
 
 
         /**
-         * TODO: Use the Pricing Web client you create in `VehiclesApiApplication`
+         * TODO: DONE: Use the Pricing Web client you create in `VehiclesApiApplication`
          *   to get the price based on the `id` input'
-         * TODO: Set the price of the car
+         * TODO: DONE: Set the price of the car
          * Note: The car class file uses @transient, meaning you will need to call
          *   the pricing service each time to get the price.
          */
@@ -67,10 +67,10 @@ public class CarService {
         System.out.println("price done"+price);
         
         /**
-         * TODO: Use the Maps Web client you create in `VehiclesApiApplication`
+         * TODO: DONE: Use the Maps Web client you create in `VehiclesApiApplication`
          *   to get the address for the vehicle. You should access the location
          *   from the car object and feed it to the Maps service.
-         * TODO: Set the location of the vehicle, including the address information
+         * TODO: DONE: Set the location of the vehicle, including the address information
          * Note: The Location class file also uses @transient for the address,
          * meaning the Maps service needs to be called each time for the address.
          */

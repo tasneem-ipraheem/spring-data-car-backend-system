@@ -1,6 +1,7 @@
 package com.udacity.vehicles.client.prices;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -54,9 +55,9 @@ public class PriceClient {
 //                            .build()
 //                    )
                     .retrieve().bodyToMono(Price.class).block();
-//            mapper.map(Objects.requireNonNull(price), price);
-
-            return String.format("%s %s", price.getCurrency(), price.getPrice());
+            mapper.map(Objects.requireNonNull(price), price);
+            if (price != null) 
+            	return String.format("%s %s", price.getCurrency(), price.getPrice());
 
         } catch (Exception e) {
             log.error("Unexpected error retrieving price for vehicle {}", vehicleId, e);
