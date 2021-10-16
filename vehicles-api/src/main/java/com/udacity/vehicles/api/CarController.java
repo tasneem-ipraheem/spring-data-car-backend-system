@@ -63,8 +63,14 @@ class CarController {
          * TODO: Use the `assembler` on that car and return the resulting output.
          *   Update the first line as part of the above implementing.
          */
-        return assembler.toResource(new Car());
+    	
+    	Car car = carService.findById(id);
+    	
+        return assembler.toResource( car);
     }
+    
+    
+    
 
     /**
      * Posts information to create a new vehicle in the system.
@@ -75,8 +81,8 @@ class CarController {
     @PostMapping
     ResponseEntity<?> post(@Valid @RequestBody Car car) throws URISyntaxException {
         /**
-         * TODO: Use the `save` method from the Car Service to save the input car.
-         * TODO: Use the `assembler` on that saved car and return as part of the response.
+         * TODO # Use the `save` method from the Car Service to save the input car.
+         * TODO # Use the `assembler` on that saved car and return as part of the response.
          *   Update the first line as part of the above implementing.
          */
     	car = carService.save(car);
