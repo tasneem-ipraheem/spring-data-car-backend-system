@@ -100,12 +100,17 @@ class CarController {
     ResponseEntity<?> put(@PathVariable Long id, @Valid @RequestBody Car car) {
         /**
          * TODO : test
-         * TODO: Set the id of the input car object to the `id` input.
-         * TODO: Save the car using the `save` method from the Car service
-         * TODO: Use the `assembler` on that updated car and return as part of the response.
+         * TODO: DONE: Set the id of the input car object to the `id` input.
+         * TODO: DONE: Save the car using the `save` method from the Car service
+         * TODO: DONE: Use the `assembler` on that updated car and return as part of the response.
          *   Update the first line as part of the above implementing.
          */
-        Resource<Car> resource = assembler.toResource(new Car());
+    	
+    	car.setId(id);
+//    	System.out.println("	:	"+car.toString());
+    	car = carService.save(car);
+
+        Resource<Car> resource = assembler.toResource(car);
         return ResponseEntity.ok(resource);
     }
 
@@ -117,8 +122,11 @@ class CarController {
     @DeleteMapping("/{id}")
     ResponseEntity<?> delete(@PathVariable Long id) {
         /**
-         * TODO: Use the Car Service to delete the requested vehicle.
+         * TODO: DONE: Use the Car Service to delete the requested vehicle.
          */
+    	
+    	carService.delete(id);
+
         return ResponseEntity.noContent().build();
     }
 }

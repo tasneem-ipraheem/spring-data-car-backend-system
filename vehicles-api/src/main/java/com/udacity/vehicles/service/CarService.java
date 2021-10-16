@@ -24,7 +24,7 @@ public class CarService {
     
     public CarService(CarRepository repository,PriceClient priceClient, MapsClient mapsClient) {
         /**
-         * TODO: Add the Maps and Pricing Web Clients you create
+         * TODO: DONE: Add the Maps and Pricing Web Clients you create
          *   in `VehiclesApiApplication` as arguments and set them here.
          */
         this.repository = repository;
@@ -107,15 +107,15 @@ public class CarService {
      */
     public void delete(Long id) {
         /**
-         * TODO: Find the car by ID from the `repository` if it exists.
+         * TODO: DONE: Find the car by ID from the `repository` if it exists.
          *   If it does not exist, throw a CarNotFoundException
          */
-
+        Car car = repository.findById(id).orElseThrow(CarNotFoundException::new);
 
         /**
-         * TODO: Delete the car from the repository.
+         * TODO: DONE: Delete the car from the repository.
          */
-
+        repository.deleteById(id);
 
     }
 }
