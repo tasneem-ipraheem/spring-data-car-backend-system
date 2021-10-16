@@ -41,9 +41,26 @@ public class CarService {
      * @return a list of all vehicles in the CarRepository
      */
     public List<Car> list() {
-        return repository.findAll();
+//        return repository.findAll();
+    	
+    	List<Car> cars = repository.findAll();
+    	
+    	cars.forEach(car -> fillCar(car) );
+    	
+    	return cars;
     }
 
+    public Car fillCar(Car car) {
+    	
+    	 String price = priceClient.getPrice(car.getId());
+         car.setPrice(price);
+         
+         Location address = mapsClient.getAddress(car.getLocation());
+         car.setLocation(address);
+         
+         return car;
+
+	}
     /**
      * Gets car information by ID (or throws exception if non-existent)
      * @param id the ID number of the car to gather information on
@@ -68,7 +85,7 @@ public class CarService {
         String price = priceClient.getPrice(vehicleId);
         car.setPrice(price);
 
-        System.out.println("price done"+price);
+        System.out.println("price done : "+price);
         
         /**
          * TODO: DONE: Use the Maps Web client you create in `VehiclesApiApplication`
@@ -80,7 +97,7 @@ public class CarService {
          */
         Location address = mapsClient.getAddress(car.getLocation());
         car.setLocation(address);
-        System.out.println("Location done"+address.toString());
+        System.out.println("Location done : "+address.toString());
 
         return car;
     }
