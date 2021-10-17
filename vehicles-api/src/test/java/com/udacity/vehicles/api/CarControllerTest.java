@@ -1,26 +1,22 @@
 package com.udacity.vehicles.api;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+//	// good material : https://lankydan.dev/2017/03/26/testing-data-transfer-objects-and-rest-controllers-in-spring-boot
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.udacity.vehicles.client.maps.MapsClient;
-import com.udacity.vehicles.client.prices.PriceClient;
-import com.udacity.vehicles.domain.Condition;
-import com.udacity.vehicles.domain.Location;
-import com.udacity.vehicles.domain.car.Car;
-import com.udacity.vehicles.domain.car.Details;
-import com.udacity.vehicles.domain.manufacturer.Manufacturer;
-import com.udacity.vehicles.service.CarService;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.Collections;
+
+import org.apache.tools.ant.taskdefs.Delete;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +29,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import com.udacity.vehicles.client.maps.MapsClient;
+import com.udacity.vehicles.client.prices.PriceClient;
+import com.udacity.vehicles.domain.Condition;
+import com.udacity.vehicles.domain.Location;
+import com.udacity.vehicles.domain.car.Car;
+import com.udacity.vehicles.domain.car.Details;
+import com.udacity.vehicles.domain.manufacturer.Manufacturer;
+import com.udacity.vehicles.service.CarService;
 
 /**
  * Implements testing of the CarController class.
@@ -43,108 +49,219 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureJsonTesters
 public class CarControllerTest {
 
-    @Autowired
-    private MockMvc mvc;
+	@Autowired
+	private MockMvc mvc;
 
-    @Autowired
-    private JacksonTester<Car> json;
+	@Autowired
+	private JacksonTester<Car> json;
 
-    @MockBean
-    private CarService carService;
+	@MockBean
+	private CarService carService;
 
-    @MockBean
-    private PriceClient priceClient;
+	@MockBean
+	private PriceClient priceClient;
 
-    @MockBean
-    private MapsClient mapsClient;
+	@MockBean
+	private MapsClient mapsClient;
 
-    /**
-     * Creates pre-requisites for testing, such as an example car.
-     */
-    @Before
-    public void setup() {
-        Car car = getCar();
-        car.setId(1L);
-        given(carService.save(any())).willReturn(car);
-        given(carService.findById(any())).willReturn(car);
-        given(carService.list()).willReturn(Collections.singletonList(car));
-    }
+	private static String CAR_JSON_STRING = "";
+	private static String CARS_LIST_JSON_STRING = "";
 
-    /**
-     * Tests for successful creation of new car in the system
-     * @throws Exception when car creation fails in the system
-     */
-    @Test
-    public void createCar() throws Exception {
-        Car car = getCar();
-        mvc.perform(
-                post(new URI("/cars"))
-                        .content(json.write(car).getJson())
-                        .contentType(MediaType.APPLICATION_JSON_UTF8)
-                        .accept(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(status().isCreated());
-    }
+	Long id = 1L;
+//	public static final org.springframework.http.MediaType HAL_JSON_UTF8;
+	public static MediaType HAL_JSON_UTF8 = new MediaType("application", "hal+json", Charset.forName("UTF-8"));
 
-    /**
-     * Tests if the read operation appropriately returns a list of vehicles.
-     * @throws Exception if the read operation of the vehicle list fails
-     */
-    @Test
-    public void listCars() throws Exception {
-        /**
-         * TODO: Add a test to check that the `get` method works by calling
-         *   the whole list of vehicles. This should utilize the car from `getCar()`
-         *   below (the vehicle will be the first in the list).
-         */
+	/**
+	 * Creates pre-requisites for testing, such as an example car.
+	 */
+	@Before
+	public void setup() {
 
-    }
+		Car car = getCreatedCar();
+//		car.setId(id);
 
-    /**
-     * Tests the read operation for a single car by ID.
-     * @throws Exception if the read operation for a single car fails
-     */
-    @Test
-    public void findCar() throws Exception {
-        /**
-         * TODO: Add a test to check that the `get` method works by calling
-         *   a vehicle by ID. This should utilize the car from `getCar()` below.
-         */
-    }
+		given(carService.save(any())).willReturn(car);
+		given(carService.findById(any())).willReturn(car);
+		given(carService.list()).willReturn(Collections.singletonList(car));
 
-    /**
-     * Tests the deletion of a single car by ID.
-     * @throws Exception if the delete operation of a vehicle fails
-     */
-    @Test
-    public void deleteCar() throws Exception {
-        /**
-         * TODO: Add a test to check whether a vehicle is appropriately deleted
-         *   when the `delete` method is called from the Car Controller. This
-         *   should utilize the car from `getCar()` below.
-         */
-    }
+		try {
+			json.write(car);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
-    /**
-     * Creates an example Car object for use in testing.
-     * @return an example Car object
-     */
-    private Car getCar() {
-        Car car = new Car();
-        car.setLocation(new Location(40.730610, -73.935242));
-        Details details = new Details();
-        Manufacturer manufacturer = new Manufacturer(101, "Chevrolet");
-        details.setManufacturer(manufacturer);
-        details.setModel("Impala");
-        details.setMileage(32280);
-        details.setExternalColor("white");
-        details.setBody("sedan");
-        details.setEngine("3.6L V6");
-        details.setFuelType("Gasoline");
-        details.setModelYear(2018);
-        details.setProductionYear(2018);
-        details.setNumberOfDoors(4);
-        car.setDetails(details);
-        car.setCondition(Condition.USED);
-        return car;
-    }
+		CAR_JSON_STRING = getCarJsonString();
+		CARS_LIST_JSON_STRING = getCarsListJsonString();
+//		JacksonTester.initFields(this, car);
+	}
+
+	/**
+	 * Tests for successful creation of new car in the system
+	 * 
+	 * @throws Exception when car creation fails in the system
+	 */
+	@Test
+	public void createCar() throws Exception {
+		Car car = getCar();
+		mvc.perform(post(new URI("/cars")).content(json.write(car).getJson())
+				.contentType(MediaType.APPLICATION_JSON_UTF8).accept(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isCreated());
+	}
+
+	/**
+	 * Tests if the read operation appropriately returns a list of vehicles.
+	 * 
+	 * @throws Exception if the read operation of the vehicle list fails
+	 */
+	@Test
+	public void listCars() throws Exception {
+		/**
+		 * TODO: Add a test to check that the `get` method works by calling the whole
+		 * list of vehicles. This should utilize the car from `getCar()` below (the
+		 * vehicle will be the first in the list).
+		 */
+
+		mvc.perform(get("/cars")).andExpect(status().isOk())
+			.andExpect(content().contentType(HAL_JSON_UTF8))
+			.andExpect(content().json(CARS_LIST_JSON_STRING));
+
+		verify(carService, times(1)).list();
+
+	}
+
+	/**
+	 * Tests the read operation for a single car by ID.
+	 * 
+	 * @throws Exception if the read operation for a single car fails
+	 */
+	@Test
+	public void findCar() throws Exception {
+		/**
+		 * TODO: Add a test to check that the `get` method works by calling a vehicle by
+		 * ID. This should utilize the car from `getCar()` below.
+		 */
+
+		mvc.perform(get("/cars/" + id))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(HAL_JSON_UTF8))
+				.andExpect(content().json(CAR_JSON_STRING));
+
+		verify(carService, times(1)).findById(id);
+
+//		assertThat(this.json.write(getCreatedCar()))
+//	      .extractingJsonPathStringValue("@.id")
+//	      .isEqualTo(id);
+	}
+
+	/**
+	 * Tests the deletion of a single car by ID.
+	 * 
+	 * @throws Exception if the delete operation of a vehicle fails
+	 */
+	@Test
+	public void deleteCar() throws Exception {
+		/**
+		 * TODO: Add a test to check whether a vehicle is appropriately deleted when the
+		 * `delete` method is called from the Car Controller. This should utilize the
+		 * car from `getCar()` below.
+		 */
+		
+		mvc.perform(MockMvcRequestBuilders.delete("/cars/" + id))
+			.andExpect(status().isNoContent());
+		
+		verify(carService, times(1)).delete(id);
+
+		
+	}
+
+	/**
+	 * Creates an example Car object for use in testing.
+	 * 
+	 * @return an example Car object
+	 */
+	private Car getCar() {
+		Car car = new Car();
+		car.setLocation(new Location(40.730610, -73.935242));
+		Details details = new Details();
+		Manufacturer manufacturer = new Manufacturer(101, "Chevrolet");
+		details.setManufacturer(manufacturer);
+		details.setModel("Impala");
+		details.setMileage(32280);
+		details.setExternalColor("white");
+		details.setBody("sedan");
+		details.setEngine("3.6L V6");
+		details.setFuelType("Gasoline");
+		details.setModelYear(2018);
+		details.setProductionYear(2018);
+		details.setNumberOfDoors(4);
+		car.setDetails(details);
+		car.setCondition(Condition.USED);
+		return car;
+	}
+
+//	private Price getPrice() {
+//		Price price = new Price();
+//
+//		price.setCurrency("USD");
+//		price.setPrice(new BigDecimal(1000.0));
+//		price.setVehicleId(id);
+//
+//		return price;
+//		
+//	}
+
+//	private Location getLocation() {
+//	return new Location(null, null);
+//		
+//	}
+
+	private Car getCreatedCar() {
+		Car dummyCar = getCar();
+
+		dummyCar.setId(id);
+		dummyCar.setPrice("1000.0");
+
+		return dummyCar;
+
+	}
+
+	private String getCarJsonString() {
+		return " {\r\n" + "  \"id\":1,\r\n" + "   \"createdAt\":null,\r\n" + "   \"modifiedAt\":null,\r\n"
+				+ "   \"condition\":\"USED\",\r\n" + "   \"details\":{\r\n" + "      \"body\":\"sedan\",\r\n"
+				+ "      \"model\":\"Impala\",\r\n" + "      \"manufacturer\":{\r\n" + "         \"code\":101,\r\n"
+				+ "         \"name\":\"Chevrolet\"\r\n" + "      },\r\n" + "      \"numberOfDoors\":4,\r\n"
+				+ "      \"fuelType\":\"Gasoline\",\r\n" + "      \"engine\":\"3.6L V6\",\r\n"
+				+ "      \"mileage\":32280,\r\n" + "      \"modelYear\":2018,\r\n"
+				+ "      \"productionYear\":2018,\r\n" + "      \"externalColor\":\"white\"\r\n" + "   },\r\n"
+				+ "   \"location\":{\r\n" + "      \"lat\":40.73061,\r\n" + "      \"lon\":-73.935242,\r\n"
+				+ "      \"address\":null,\r\n" + "      \"city\":null,\r\n" + "      \"state\":null,\r\n"
+				+ "      \"zip\":null\r\n" + "   },\r\n" + "   \"price\":\"1000.0\",\r\n" + "   \"_links\":{\r\n"
+				+ "      \"self\":{\r\n" + "         \"href\":\"http://localhost/cars/1\"\r\n" + "      },\r\n"
+				+ "      \"cars\":{\r\n" + "         \"href\":\"http://localhost/cars\"\r\n" + "      }\r\n"
+				+ "   }\r\n" + "}";
+	}
+
+	private String getCarsListJsonString() {
+		return "{\r\n" + "   \"_embedded\":{\r\n" + "      \"carList\":[\r\n" + "         {\r\n"
+				+ "            \"id\":1,\r\n" + "            \"createdAt\":null,\r\n"
+				+ "            \"modifiedAt\":null,\r\n" + "            \"condition\":\"USED\",\r\n"
+				+ "            \"details\":{\r\n" + "               \"body\":\"sedan\",\r\n"
+				+ "               \"model\":\"Impala\",\r\n" + "               \"manufacturer\":{\r\n"
+				+ "                  \"code\":101,\r\n" + "                  \"name\":\"Chevrolet\"\r\n"
+				+ "               },\r\n" + "               \"numberOfDoors\":4,\r\n"
+				+ "               \"fuelType\":\"Gasoline\",\r\n" + "               \"engine\":\"3.6L V6\",\r\n"
+				+ "               \"mileage\":32280,\r\n" + "               \"modelYear\":2018,\r\n"
+				+ "               \"productionYear\":2018,\r\n" + "               \"externalColor\":\"white\"\r\n"
+				+ "            },\r\n" + "            \"location\":{\r\n" + "               \"lat\":40.73061,\r\n"
+				+ "               \"lon\":-73.935242,\r\n" + "               \"address\":null,\r\n"
+				+ "               \"city\":null,\r\n" + "               \"state\":null,\r\n"
+				+ "               \"zip\":null\r\n" + "            },\r\n" + "            \"price\":\"1000.0\",\r\n"
+				+ "            \"_links\":{\r\n" + "               \"self\":{\r\n"
+				+ "                  \"href\":\"http://localhost/cars/1\"\r\n" + "               },\r\n"
+				+ "               \"cars\":{\r\n" + "                  \"href\":\"http://localhost/cars\"\r\n"
+				+ "               }\r\n" + "            }\r\n" + "         }\r\n" + "      ]\r\n" + "   },\r\n"
+				+ "   \"_links\":{\r\n" + "      \"self\":{\r\n" + "         \"href\":\"http://localhost/cars\"\r\n"
+				+ "      }\r\n" + "   }\r\n" + "}";
+	}
+
 }
