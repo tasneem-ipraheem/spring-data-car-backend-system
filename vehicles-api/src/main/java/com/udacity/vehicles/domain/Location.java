@@ -85,5 +85,4 @@ public class Location {
 				+ ", zip=" + zip + "]";
 	}
     
-    
 }

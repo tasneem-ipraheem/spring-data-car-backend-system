@@ -65,7 +65,6 @@ public class CarControllerTest {
 
 	private static String CAR_JSON_STRING = "";
 	private static String CARS_LIST_JSON_STRING = "";
-	private static String NEW_CAR_JSON_STRING = "";
 
 	
 	Long id = 1L;
@@ -93,7 +92,6 @@ public class CarControllerTest {
 
 		CAR_JSON_STRING = getCarJsonString();
 		CARS_LIST_JSON_STRING = getCarsListJsonString();
-		NEW_CAR_JSON_STRING = getNEwCarJsonString();
 //		JacksonTester.initFields(this, car);
 	}
 
@@ -124,11 +122,6 @@ public class CarControllerTest {
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.accept(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(status().isOk());
-//        .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
-//        .andExpect(MockMvcResultMatchers.jsonPath("$.condition").value(Condition.NEW));
-
-		
-//		verify(carService, times(1)).save(newCar);
 
 	}
 
@@ -169,13 +162,15 @@ public class CarControllerTest {
 		mvc.perform(get("/cars/" + id))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(HAL_JSON_UTF8))
+				/*
+				 * or we can check single values as Follows
+				 *        .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
+				 *        .andExpect(MockMvcResultMatchers.jsonPath("$.condition").value(Condition.USED));
+				 */
 				.andExpect(content().json(CAR_JSON_STRING));
 
 		verify(carService, times(1)).findById(id);
 
-//		assertThat(this.json.write(getCreatedCar()))
-//	      .extractingJsonPathStringValue("@.id")
-//	      .isEqualTo(id);
 	}
 
 	/**
@@ -223,22 +218,6 @@ public class CarControllerTest {
 		car.setCondition(Condition.USED);
 		return car;
 	}
-
-//	private Price getPrice() {
-//		Price price = new Price();
-//
-//		price.setCurrency("USD");
-//		price.setPrice(new BigDecimal(1000.0));
-//		price.setVehicleId(id);
-//
-//		return price;
-//		
-//	}
-
-//	private Location getLocation() {
-//	return new Location(null, null);
-//		
-//	}
 
 	private Car getCreatedCar() {
 		Car dummyCar = getCar();
@@ -296,38 +275,6 @@ public class CarControllerTest {
 				+ "}";
 	}
 	
-	private String getNEwCarJsonString() {
-		return "{\r\n"
-				+ "   \"id\":1,\r\n"
-				+ "   \"createdAt\":null,\r\n"
-				+ "   \"modifiedAt\":null,\r\n"
-				+ "   \"condition\":\"NEW\",\r\n"   /* edited from USED to NEW*/
-				+ "   \"details\":{\r\n"
-				+ "      \"body\":\"sedan\",\r\n"
-				+ "      \"model\":\"Impala\",\r\n"
-				+ "      \"manufacturer\":{\r\n"
-				+ "         \"code\":101,\r\n"
-				+ "         \"name\":\"Chevrolet\"\r\n"
-				+ "      },\r\n"
-				+ "      \"numberOfDoors\":4,\r\n"
-				+ "      \"fuelType\":\"Gasoline\",\r\n"
-				+ "      \"engine\":\"3.6L V6\",\r\n"
-				+ "      \"mileage\":32280,\r\n"
-				+ "      \"modelYear\":2018,\r\n"
-				+ "      \"productionYear\":2018,\r\n"
-				+ "      \"externalColor\":\"white\"\r\n"
-				+ "   },\r\n"
-				+ "   \"location\":{\r\n"
-				+ "      \"lat\":40.73061,\r\n"
-				+ "      \"lon\":-73.935242,\r\n"
-				+ "      \"address\":null,\r\n"
-				+ "      \"city\":null,\r\n"
-				+ "      \"state\":null,\r\n"
-				+ "      \"zip\":null\r\n"
-				+ "   },\r\n"
-				+ "   \"price\":\"1000.0\"\r\n"
-				+ "}";
-	}
 
 	private String getCarsListJsonString() {
 		return "{\r\n" + "   \"_embedded\":{\r\n" + "      \"carList\":[\r\n" + "         {\r\n"
