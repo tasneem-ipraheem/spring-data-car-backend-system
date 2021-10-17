@@ -121,7 +121,15 @@ public class CarControllerTest {
 				.content(json.write(newCar).getJson())
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.accept(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(status().isOk());
+				.andExpect(status().isOk())
+				.andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
+				.andExpect(MockMvcResultMatchers.jsonPath("$.['details'].numberOfDoors").value(3));
+				
+		
+//      
+
+
+		verify(carService, times(1)).save(newCar);
 
 	}
 
@@ -231,7 +239,12 @@ public class CarControllerTest {
 	
 	private Car getNewCar() {
 		Car newCar = getCreatedCar();
-		newCar.setCondition(Condition.NEW);
+		
+		
+		Details details = newCar.getDetails();
+		details.setNumberOfDoors(3);;
+		newCar.setDetails(details);
+		
 		return newCar;
 	}
 
