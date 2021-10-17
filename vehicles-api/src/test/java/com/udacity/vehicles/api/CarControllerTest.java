@@ -1,6 +1,5 @@
 package com.udacity.vehicles.api;
 
-import static org.junit.Assert.assertThat;
 //	// good material : https://lankydan.dev/2017/03/26/testing-data-transfer-objects-and-rest-controllers-in-spring-boot
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -16,7 +15,6 @@ import java.net.URI;
 import java.nio.charset.Charset;
 import java.util.Collections;
 
-import org.apache.tools.ant.taskdefs.Delete;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.udacity.vehicles.client.maps.MapsClient;
 import com.udacity.vehicles.client.prices.PriceClient;
@@ -66,7 +65,9 @@ public class CarControllerTest {
 
 	private static String CAR_JSON_STRING = "";
 	private static String CARS_LIST_JSON_STRING = "";
+	private static String NEW_CAR_JSON_STRING = "";
 
+	
 	Long id = 1L;
 //	public static final org.springframework.http.MediaType HAL_JSON_UTF8;
 	public static MediaType HAL_JSON_UTF8 = new MediaType("application", "hal+json", Charset.forName("UTF-8"));
@@ -92,6 +93,7 @@ public class CarControllerTest {
 
 		CAR_JSON_STRING = getCarJsonString();
 		CARS_LIST_JSON_STRING = getCarsListJsonString();
+		NEW_CAR_JSON_STRING = getNEwCarJsonString();
 //		JacksonTester.initFields(this, car);
 	}
 
@@ -107,6 +109,29 @@ public class CarControllerTest {
 				.contentType(MediaType.APPLICATION_JSON_UTF8).accept(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(status().isCreated());
 	}
+	
+	/**
+	 * Tests for successful creation of new car in the system
+	 * 
+	 * @throws Exception when car creation fails in the system
+	 */
+	@Test
+	public void editCar() throws Exception {
+		Car newCar = getNewCar();
+		
+		mvc.perform(MockMvcRequestBuilders.put(new URI("/cars/"+id))
+				.content(json.write(newCar).getJson())
+				.contentType(MediaType.APPLICATION_JSON_UTF8)
+				.accept(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk());
+//        .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(id))
+//        .andExpect(MockMvcResultMatchers.jsonPath("$.condition").value(Condition.NEW));
+
+		
+//		verify(carService, times(1)).save(newCar);
+
+	}
+
 
 	/**
 	 * Tests if the read operation appropriately returns a list of vehicles.
@@ -116,7 +141,7 @@ public class CarControllerTest {
 	@Test
 	public void listCars() throws Exception {
 		/**
-		 * TODO: Add a test to check that the `get` method works by calling the whole
+		 * TODO: DONE: Add a test to check that the `get` method works by calling the whole
 		 * list of vehicles. This should utilize the car from `getCar()` below (the
 		 * vehicle will be the first in the list).
 		 */
@@ -137,7 +162,7 @@ public class CarControllerTest {
 	@Test
 	public void findCar() throws Exception {
 		/**
-		 * TODO: Add a test to check that the `get` method works by calling a vehicle by
+		 * TODO: DONE: Add a test to check that the `get` method works by calling a vehicle by
 		 * ID. This should utilize the car from `getCar()` below.
 		 */
 
@@ -161,7 +186,7 @@ public class CarControllerTest {
 	@Test
 	public void deleteCar() throws Exception {
 		/**
-		 * TODO: Add a test to check whether a vehicle is appropriately deleted when the
+		 * TODO: DONE: Add a test to check whether a vehicle is appropriately deleted when the
 		 * `delete` method is called from the Car Controller. This should utilize the
 		 * car from `getCar()` below.
 		 */
@@ -224,21 +249,84 @@ public class CarControllerTest {
 		return dummyCar;
 
 	}
+	
+	private Car getNewCar() {
+		Car newCar = getCreatedCar();
+		newCar.setCondition(Condition.NEW);
+		return newCar;
+	}
 
 	private String getCarJsonString() {
-		return " {\r\n" + "  \"id\":1,\r\n" + "   \"createdAt\":null,\r\n" + "   \"modifiedAt\":null,\r\n"
-				+ "   \"condition\":\"USED\",\r\n" + "   \"details\":{\r\n" + "      \"body\":\"sedan\",\r\n"
-				+ "      \"model\":\"Impala\",\r\n" + "      \"manufacturer\":{\r\n" + "         \"code\":101,\r\n"
-				+ "         \"name\":\"Chevrolet\"\r\n" + "      },\r\n" + "      \"numberOfDoors\":4,\r\n"
-				+ "      \"fuelType\":\"Gasoline\",\r\n" + "      \"engine\":\"3.6L V6\",\r\n"
-				+ "      \"mileage\":32280,\r\n" + "      \"modelYear\":2018,\r\n"
-				+ "      \"productionYear\":2018,\r\n" + "      \"externalColor\":\"white\"\r\n" + "   },\r\n"
-				+ "   \"location\":{\r\n" + "      \"lat\":40.73061,\r\n" + "      \"lon\":-73.935242,\r\n"
-				+ "      \"address\":null,\r\n" + "      \"city\":null,\r\n" + "      \"state\":null,\r\n"
-				+ "      \"zip\":null\r\n" + "   },\r\n" + "   \"price\":\"1000.0\",\r\n" + "   \"_links\":{\r\n"
-				+ "      \"self\":{\r\n" + "         \"href\":\"http://localhost/cars/1\"\r\n" + "      },\r\n"
-				+ "      \"cars\":{\r\n" + "         \"href\":\"http://localhost/cars\"\r\n" + "      }\r\n"
-				+ "   }\r\n" + "}";
+		return " {\r\n" + "  \"id\":1,\r\n" 
+				+ "   \"createdAt\":null,\r\n" 
+				+ "   \"modifiedAt\":null,\r\n"
+				+ "   \"condition\":\"USED\",\r\n" 
+				+ "   \"details\":{\r\n" 
+				+ "      \"body\":\"sedan\",\r\n"
+				+ "      \"model\":\"Impala\",\r\n" 
+				+ "      \"manufacturer\":{\r\n" 
+				+ "         \"code\":101,\r\n"
+				+ "         \"name\":\"Chevrolet\"\r\n" 
+				+ "      },\r\n" 
+				+ "      \"numberOfDoors\":4,\r\n"
+				+ "      \"fuelType\":\"Gasoline\",\r\n" 
+				+ "      \"engine\":\"3.6L V6\",\r\n"
+				+ "      \"mileage\":32280,\r\n" 
+				+ "      \"modelYear\":2018,\r\n"
+				+ "      \"productionYear\":2018,\r\n" 
+				+ "      \"externalColor\":\"white\"\r\n" 
+				+ "   },\r\n"
+				+ "   \"location\":{\r\n" 
+				+ "      \"lat\":40.73061,\r\n" 
+				+ "      \"lon\":-73.935242,\r\n"
+				+ "      \"address\":null,\r\n" 
+				+ "      \"city\":null,\r\n" 
+				+ "      \"state\":null,\r\n"
+				+ "      \"zip\":null\r\n" 
+				+ "   },\r\n" 
+				+ "   \"price\":\"1000.0\",\r\n" 
+				+ "   \"_links\":{\r\n"
+				+ "      \"self\":{\r\n"
+				+ "         \"href\":\"http://localhost/cars/1\"\r\n" 
+				+ "      },\r\n"
+				+ "      \"cars\":{\r\n"
+				+ "         \"href\":\"http://localhost/cars\"\r\n" 
+				+ "      }\r\n"
+				+ "   }\r\n" 
+				+ "}";
+	}
+	
+	private String getNEwCarJsonString() {
+		return "{\r\n"
+				+ "   \"id\":1,\r\n"
+				+ "   \"createdAt\":null,\r\n"
+				+ "   \"modifiedAt\":null,\r\n"
+				+ "   \"condition\":\"NEW\",\r\n"   /* edited from USED to NEW*/
+				+ "   \"details\":{\r\n"
+				+ "      \"body\":\"sedan\",\r\n"
+				+ "      \"model\":\"Impala\",\r\n"
+				+ "      \"manufacturer\":{\r\n"
+				+ "         \"code\":101,\r\n"
+				+ "         \"name\":\"Chevrolet\"\r\n"
+				+ "      },\r\n"
+				+ "      \"numberOfDoors\":4,\r\n"
+				+ "      \"fuelType\":\"Gasoline\",\r\n"
+				+ "      \"engine\":\"3.6L V6\",\r\n"
+				+ "      \"mileage\":32280,\r\n"
+				+ "      \"modelYear\":2018,\r\n"
+				+ "      \"productionYear\":2018,\r\n"
+				+ "      \"externalColor\":\"white\"\r\n"
+				+ "   },\r\n"
+				+ "   \"location\":{\r\n"
+				+ "      \"lat\":40.73061,\r\n"
+				+ "      \"lon\":-73.935242,\r\n"
+				+ "      \"address\":null,\r\n"
+				+ "      \"city\":null,\r\n"
+				+ "      \"state\":null,\r\n"
+				+ "      \"zip\":null\r\n"
+				+ "   },\r\n"
+				+ "   \"price\":\"1000.0\"\r\n"
+				+ "}";
 	}
 
 	private String getCarsListJsonString() {

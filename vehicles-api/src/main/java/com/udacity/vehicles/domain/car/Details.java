@@ -116,4 +116,13 @@ public class Details {
     public void setExternalColor(String externalColor) {
         this.externalColor = externalColor;
     }
+
+	@Override
+	public String toString() {
+		return "Details [body=" + body + ", model=" + model + ", manufacturer=" + manufacturer + ", numberOfDoors="
+				+ numberOfDoors + ", fuelType=" + fuelType + ", engine=" + engine + ", mileage=" + mileage
+				+ ", modelYear=" + modelYear + ", productionYear=" + productionYear + ", externalColor=" + externalColor
+				+ "]";
+	}
+    
 }
