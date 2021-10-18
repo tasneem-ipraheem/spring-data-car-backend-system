@@ -67,14 +67,31 @@ public class PricingServiceApplicationTests {
 	
 	
 	@Test
+	public void getPriceById() throws URISyntaxException{
+
+		 final String baseUrl = "http://localhost:"+port+"/prices/"+id;
+	        
+			ResponseEntity<String> response = this.restTemplate.getForEntity(baseUrl, String.class);
+			Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
+	        
+	        Assertions.assertEquals(200, response.getStatusCodeValue());
+	        Assertions.assertTrue(response.getBody().contains("\"currency\" : \"USD\""));
+	        Assertions.assertTrue(response.getBody().contains("\"price\" : 1000.00"));
+	    }
+	
+	
+	/*
+	 * 
+	 //learning space 
+	 
+	@Test
 	public void getPricesUsingMvc() throws Exception{
 		mvc.perform(MockMvcRequestBuilders.get("/prices"))
 		.andDo(MockMvcResultHandlers.print())
 		.andExpect(status().isOk());
 
 	}
-	
-	
+
 	@Test
 	public void getPriceById_Junit5_trial() throws URISyntaxException{
 
@@ -94,7 +111,11 @@ public class PricingServiceApplicationTests {
 	        Assertions.assertEquals(200, response.getStatusCodeValue());
 	        Assertions.assertTrue(jsonResponce.contains("\"currency\" : \"USD\""));
 	        Assertions.assertTrue(jsonResponce.contains("\"price\" : 1000.00"));
-	    }
+	    }*/
+	
+	
+	
+	
 	}
 
 
